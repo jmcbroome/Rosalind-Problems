@@ -1,0 +1,136 @@
+Given a series of Kmers in the pattern where each kmer is identical to the previous except removing the first symbol and adding a new one on the end. all are same length.
+
+going to open a file in main(), readlines(), strip useless lines and generate a list of strings of equal length (the kmer set)
+then analyze it with this class, so this class takes input of a list of strings
+
+algorithm thinking out
+    start with first kmer, which is first len symbols of output
+        going to want to split each kmer into lists of symbols as they're called out of the original list
+        then compare that kmer with the last len symbols of the output
+        for each that matches, do nothing, then any that don't match add them to the end
+        in the scope of just rosalind these should only be the very last one
+        but doing this means you can concatenate kmers with 2 or more offset
+        to accomplish this, start by comparing the first base in each
+        if not the same, start incrementing a gap marker G
+        then add number bases on the end equal to G
+        then subtract gap to the next index check to represent the offset
+        
+        AGGC
+        GGCT
+        
+        A vs G- different, G+=1
+        now check again but instead of index 0 vs 0 its 1 vs 1-G
+       GvsG, G still =1, then GvG, then CvC, then T != C 
+       each time you get a base match, keep the offset but reset your G to account for new gaps of different lengths
+          another example
+         AGGCTAT
+         GGCATGC
+         how would these align?
+         A-G
+         nope, add 1 to offset and try next base
+         G-G
+         yes, increment index
+         G-G
+         C-C
+         now it looks like
+         AGGCTAT
+          GGCCGTA
+         I could repeat this checking loop to account for additional alignments then more gaps as a fuller algorithm would
+         but problematic if there are sections of kmer that do not align in the middle- what do you add to the end?
+         so instead I'm going to ignore that possibility and assume there is only 1 gap point
+         basically to avoid gaps WITHIN the kmer I'm aligning, since I don't have a good idea of how to handle that atm
+         if this went on it would continue to attempt to align until it found a matching base
+         this is an extremely rudimentary alignment algorithm but should work for the purposes of this assignment
+         a more complete algorithm could also gap BACKWARD
+         ACCGT
+         TACCG
+         this could align
+         ACCGT
+        TACCG
+         but if you can't go back you only get
+         ACCGT
+         ACCGT
+             TACCG
+         which is way worse
+         okay how to handle this?
+         try gapping both forward and back
+         instead of trying G=1,2,3...
+         try G=1,-1,2,-2... to minimize total gap size
+         
+         that's nice and all, but I think I need to stay away from this level of algorithm for just this assignment
+         like how do I add bases if it aligns with a negative gap?
+         I don't have a full reference genome, I'm just adding kmers that are predetermined to mostly align
+         while I want to be more complete about it then just taking the last symbol of every entry, which would work only for G=1, I should stick to forward alignment with a single gap of any length
+         
+         having thought out the algorithm, decided goal = algorithm to align kmer to reference with a forward gap of any length (any amount of bases hanging off end of kmer) and add all the hangers for each kmer
+         
+       at end of output file, add remaining output bases equal to G to outpu
+       
+pseudocode
+
+class genomePath
+    init(input)
+        self.kmer_full = input
+        self.kmer_len = len(a string)
+        self.alignment_list = [first_kmer]
+        can put code to validate that all lines are the same length
+    align_kmer
+        g=0
+        for kmer in kmer_full
+            for i in range(0,len)
+                while g<len
+                    if output[-i+g] != kmer[i]
+                        g +=1
+                    else
+                        break
+                    #if it doesn't align at all (g>len) then just adds the whole thing to the end
+                    #if they align perfectly, no gap, adds nothing
+            if g != 0
+                self.alignment_list.append(kmer[-g:]
+    output_alignment_full
+        return ''.join(self.alignment_list)
+                    
+                    
+def main(file_path)
+    with open file as file
+        line_list = []
+        lines = file.readlines()
+            insert code for removing /n from that other problem I did
+        for line in lines
+                line_list.append(line)
+        path = genomePath(line_list)
+        path.align_kmer
+        return(path.output_alignment_full)
+                    
+print(main(file_path))
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
